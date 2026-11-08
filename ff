@@ -1,0 +1,25 @@
+cat << 'EOF' > frp.py
+import serial
+import time
+
+port = "/dev/ttyACM0"
+print(f"Bağlanılıyor: {port}")
+
+try:
+    s = serial.Serial(port, 115200, timeout=3)
+    # AT komutu testi
+    s.write(b"AT\r\n")
+    time.sleep(1)
+    print("Yanıt:", s.read_all().decode(errors="ignore"))
+
+    # Samsung FRP tetikleme komutu (AT+KSTRING=0,3 vb.)
+    print("FRP komutu gönderiliyor...")
+    s.write(b"AT+KSTRING=0,3\r\n")
+    time.sleep(1)
+    print("Sonuç:", s.read_all().decode(errors="ignore"))
+    
+    s.close()
+    print("İşlem tamamlandı. Telefon ekranını kontrol edin.")
+except Exception as e:
+    print("Hata:", e)
+EOF
